@@ -27,14 +27,34 @@ Project File Date:  10/11/2022
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 3 (build 300)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'FreeRTOS'
-"..\OBJ\LED.axf" - 0 Error(s), 0 Warning(s).
+compiling mpu6050.c...
+compiling main.c...
+compiling led.c...
+compiling schedule.c...
+..\HARDWARE\schedule\schedule.h(78): warning:  #1-D: last line of file ends without a newline
+  void PID();
+..\HARDWARE\schedule\schedule.h(78): warning:  #1295-D: Deprecated declaration PID - give arg types
+  void PID();
+..\HARDWARE\schedule\schedule.c: 2 warnings, 0 errors
+compiling usart.c...
+..\SYSTEM\usart\usart.c(279): warning:  #177-D: variable "i" was declared but never referenced
+      int i;
+..\SYSTEM\usart\usart.c: 1 warning, 0 errors
+compiling data_transfer.c...
+..\HARDWARE\Dateex\data_transfer.c(43): warning:  #177-D: function "USTB_DT_Send_Msg" was declared but never referenced
+  static void USTB_DT_Send_Msg(u8 id, u8 data)
+..\HARDWARE\Dateex\data_transfer.c: 1 warning, 0 errors
+linking...
+Program Size: Code=14440 RO-data=460 RW-data=212 ZI-data=23636  
+FromELF: creating hex file...
+"..\OBJ\LED.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   C:\Users\2297257662\Desktop\F411FreeRTOS\USER\RTE
   D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:10
 </pre>
 </body>
 </html>
