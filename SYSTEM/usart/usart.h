@@ -28,11 +28,30 @@
 ////////////////////////////////////////////////////////////////////////////////// 	
 #define USART_REC_LEN  			200  	//定义最大接收字节数 200
 #define EN_USART1_RX 			1		//使能（1）/禁止（0）串口1接收
-	  	
+#define BITBAND_REG(Reg,Bit) (*((uint32_t volatile*)(0x42000000u + (32u*((uint32_t)&(Reg) - (uint32_t)0x40000000u)) + (4u*((uint32_t)(Bit))))))  	
+#define BLUTTOOTH_NUM 100
+typedef struct Bluetooth_Queue {
+ int head;//???
+ int tail;//???
+ uint8_t key[BLUTTOOTH_NUM];//??
+ int length;//????-1 ??
+}Bluetooth_Queue;
+
+void Bluetooth_enter_Queue(Bluetooth_Queue * pq, uint8_t x);
+uint8_t Bluetootth_exit_Queue(Bluetooth_Queue * pq);
+void Bluetoot_Receive_isr(uint8_t temp);
+void Bluetooth_Connect_State(void);
+
+
 extern u8  USART_RX_BUF[USART_REC_LEN]; //接收缓冲,最大USART_REC_LEN个字节.末字节为换行符 
 extern u16 USART_RX_STA;         		//接收状态标记	
+
+extern int  USART_state;   //接收状态标记	
 //如果想串口中断接收，请不要注释以下宏定义
 void uart_init(u32 bound);
+void Bluetoot_Receive_isr1(uint8_t temp);
+void USART1_DataSend(uint8_t data);
+void UART_SendBytes(const uint8_t *dt, uint32_t n);
 #endif
 
 

@@ -1,5 +1,6 @@
 #include "sys.h"
 #include "usart.h"	
+#include "data_transfer.h"
 ////////////////////////////////////////////////////////////////////////////////// 	 
 //如果使用ucos,则包括下面的头文件即可.
 #if SYSTEM_SUPPORT_OS
@@ -30,7 +31,23 @@
 //V1.5修改说明
 //1,增加了对UCOSII的支持
 ////////////////////////////////////////////////////////////////////////////////// 	  
- 
+ uint8_t TxBuffer[256];
+uint8_t count=0;
+uint8_t BTNumberSend[15] = {0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0, 0,0};//sendTemp
+uint8_t BTNumberTrue[10] = {0,0,0,0,0, 0,0,0,0,0};//vlidNum
+uint16_t BTNumberTrue_16[5] = {0,0,0,0,0};
+uint8_t BTNumberRece[16] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,};
+uint8_t BTNumberErrorTrue[15] = {0,0,0,0, 0,0,0,0, 0,0};
+Bluetooth_Queue Bluetooth_queue;
+int Bluth_waitTime = 0;
+uint8_t receFlag = 0;//??????????
+uint8_t BTNumberReceCount = 0;
+uint8_t receErrorTime = 0;
+uint8_t headcount = 0;//帧头判断标志位
+uint8_t head2count = 0;//帧头判断2
+int Bluetooth_start = 0 ;
+int16_t HIGH,Speed_set=0,D_yaw_control=50,D_pitch_control=50,D_roll_control=50;//速度频率设置
+int16_t P,I,D; 
 
 //////////////////////////////////////////////////////////////////
 //加入以下代码,支持printf函数,而不需要选择use MicroLIB	  
@@ -67,6 +84,10 @@ u8 USART_RX_BUF[USART_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
 //bit13~0，	接收到的有效字节数目
 u16 USART_RX_STA=0;       //接收状态标记	
 
+u8 Tx1Buffer[256];
+u8 Tx1Counter=0;
+u8 count1=0;
+int  USART_state =0 ; 
 //初始化IO 串口1 
 //bound:波特率
 void uart_init(u32 bound){
@@ -142,12 +163,242 @@ void USART1_IRQHandler(void)                	//串口1中断服务程序
 					if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收	  
 				}		 
 			}
-		}   		 
+		} 
+		Bluetoot_Receive_isr1(Res);	
+		USTB_DT_Data_Receive_Prepare(Res);		
   } 
 } 
 #endif	
 
+ void USART1_DataSend(uint8_t data)
+{
+    while((USART1->SR & 0X40) == 0); //循环发送,直到发送完毕
+    USART1->DR = data;
+}
+
+void UART_SendBytes(const uint8_t *dt, uint32_t n)
+{
+    while (n--)
+    {
+        BITBAND_REG(USART1->SR, 6) = 0;
+        USART1->DR = *dt++;
+        while (!BITBAND_REG(USART1->SR, 6));
+    }
+
+}
+/**********************************************************
+Function Name:Usart2_Send
+Description:数据包发送服务函数
+Inputs:  unsigned char *DataToSend ,uint8_t data_num
+Outputs: None
+Notes:数据数组定长   
+***********************************************************/
+void Usart1_Send(unsigned char *DataToSend ,uint8_t data_num)
+{
+ uint8_t i;
+	for(i=0;i<data_num;i++)
+	{
+		TxBuffer[count++] = *(DataToSend+i);
+	}
+
+	if(!(USART1->CR1 & USART_CR1_TXEIE))
+	{
+		USART_ITConfig(USART1, USART_IT_TXE, ENABLE); 
+	}
+}
+/**********************************************************
+Function Name:Bluetoot_Receive_isr
+Description:修改后的协议解析函数  
+Inputs:  uint8_t temp
+Outputs: None
+Notes:去掉CRC校验加上另外位置数据包   
+***********************************************************/
+
+uint8_t BTreceCRCTemp = 0;//奇偶校验中间变量
+uint8_t BTreceCRCFlag = 0;//奇偶校验标志
+uint8_t receive;
+u8 auto_control=0;
+void Bluetoot_Receive_isr1(uint8_t temp)
+{
+    int i;
+    receive = temp;
+    if(receFlag == 1)//调节PID和设定高度
+    {
+        BTNumberRece[BTNumberReceCount] = temp;
+        BTNumberReceCount ++;
+        //接受一个数据包完成
+        if(BTNumberReceCount >= 15)
+        {
+            receFlag = 0;
+            BTNumberReceCount = 0;
+                
+            BTreceCRCTemp = 0;//奇偶校验中间变量
+            BTreceCRCFlag = 0;//奇偶校验标志
+                
+            for(i = 2; i < 12; i++)
+            {
+                BTreceCRCTemp = BTreceCRCTemp + BTNumberRece[i]%2;
+            }
+            if(BTNumberRece[12] == BTreceCRCTemp && BTNumberRece[13] == 0xf0 && BTNumberRece[14] == 0xf0)
+                BTreceCRCFlag = 1;
+                
+            if(BTreceCRCFlag == 1)//接受数据准确存队列
+            {
+                auto_control = BTNumberRece[5];
+                D_yaw_control =BTNumberRece[7]+BTNumberRece[6]*256;//Kd
+                Speed_set=(BTNumberRece[9]+BTNumberRece[8]*256);//设定高度	
+                D_pitch_control=BTNumberRece[11]+BTNumberRece[10]*256;//实际高度	      
+								USART_state = 1;	
+            }
+
+        }
+    }
+    else
+    {
+        //判断帧头
+        if(temp == 0xff)
+        {
+            headcount ++;
+        }
+        else
+        {
+            headcount = 0;
+        }
+        if(headcount >= 2)
+        {
+            headcount = 0;
+            receFlag = 1;
+            BTNumberRece[0] = 0xff;
+            BTNumberRece[1] = 0xff;
+            BTNumberReceCount = 2;
+        }
+    } 
+}
+void Bluetoot_Receive_isr(uint8_t temp)
+{
+    int i;
+    receive = temp;
+    if(receFlag == 1)//调节PID和设定高度
+    {
+        BTNumberRece[BTNumberReceCount] = temp;
+        BTNumberReceCount ++;
+        //接受一个数据包完成
+        if(BTNumberReceCount >= 4)
+        {
  
+          Speed_set=(BTNumberRece[2]);//设定油门
+	      
+        }
+    }
+    else
+    {
+        //判断帧头
+        if(temp == 0xee || (headcount==1 && temp == 0xff))
+        {
+            headcount ++;
+        }
+        else
+        {
+            headcount = 0;
+        }
+        if(headcount >= 2)
+        {
+            headcount = 0;
+            receFlag = 1;
+            BTNumberRece[0] = 0xee;
+            BTNumberRece[1] = 0xff;
+            BTNumberReceCount = 2;
+        }
+    } 
+}
+
+
+/**********************************************************
+Function Name:enQueue deQueue
+Description:将收到数据压入堆栈 ，防止数据丢失
+Inputs:  None
+Outputs: None
+Notes:   
+***********************************************************/
+void Bluetooth_enter_Queue(struct Bluetooth_Queue * pq, uint8_t x)
+{
+  pq -> key[pq -> tail] = x;
+
+  if(pq -> tail >= pq -> length) 
+  {
+    pq -> tail = 0;
+  } 
+  else 
+  {
+    pq -> tail++;
+  }
+}
+
+uint8_t Bluetooth_exit_Queue(struct Bluetooth_Queue * pq)
+{
+  uint8_t x;
+  
+  x = pq -> key[pq -> head];
+  if(pq -> head >= pq -> length) {
+    pq -> head = 0;
+  } 
+  else 
+  {
+    pq -> head++;
+  }
+  return x;
+}
+
+/**********************************************************
+Function send_Bluetooth_Data
+Description:将数据打包发出去
+Inputs:  None
+Outputs: None
+Notes: 暂时没用  
+***********************************************************/
+void send_Bluetooth_Data(int16_t send_Bluetooth_Data[5] )
+{
+  uint8_t BTsendCRCTemp = 0;
+  int16_t dataTemp = 0;
+	int i;
+  
+  //???
+  BTNumberSend[0] = 0xff;
+  BTNumberSend[1] = 0xff;
+ 
+  //data*20
+  //1
+  dataTemp = (int16_t)send_Bluetooth_Data[0];
+  BTNumberSend[2] = dataTemp >> 8;
+  BTNumberSend[3] = dataTemp;
+  //2
+  dataTemp = (int16_t)send_Bluetooth_Data[1];
+  BTNumberSend[4] = dataTemp >> 8;
+  BTNumberSend[5] = dataTemp;
+  //3
+  dataTemp = (int16_t)send_Bluetooth_Data[2];
+  BTNumberSend[6] = dataTemp >> 8;
+  BTNumberSend[7] = dataTemp;
+  //4
+  dataTemp = (int16_t)send_Bluetooth_Data[3];
+  BTNumberSend[8] = dataTemp >> 8;
+  BTNumberSend[9] = dataTemp;
+  //5
+  dataTemp = (int16_t)send_Bluetooth_Data[4];
+  BTNumberSend[10] = dataTemp >> 8;
+  BTNumberSend[11] = dataTemp;
+  
+  for(i = 2; i < 12; i++)
+  {
+    BTsendCRCTemp = BTsendCRCTemp + BTNumberSend[i]%2;
+  }
+  BTNumberSend[12] = BTsendCRCTemp;
+  //???
+  BTNumberSend[13] = 0xf0;
+  BTNumberSend[14] = 0xf0;
+	
+	Usart1_Send(BTNumberSend,15);
+} // handleSendData
 
 
 

@@ -31,6 +31,7 @@
 ..\obj\usart.o: ..\FWLIB\inc\stm32f4xx_flash_ramfunc.h
 ..\obj\usart.o: ..\SYSTEM\usart\usart.h
 ..\obj\usart.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\usart.o: ..\HARDWARE\Dateex\data_transfer.h
 ..\obj\usart.o: ..\FreeRTOS\include\FreeRTOS.h
 ..\obj\usart.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\obj\usart.o: ..\FreeRTOS\include\FreeRTOSConfig.h
