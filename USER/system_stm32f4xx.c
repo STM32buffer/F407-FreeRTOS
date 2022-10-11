@@ -296,7 +296,7 @@
      ?SB54, SB55 OFF
      ?R35 removed
      ?SB16, SB50 ON */
-/* #define USE_HSE_BYPASS */
+	#define USE_HSE_BYPASS
 
 #if defined (USE_HSE_BYPASS)     
 #define HSE_BYPASS_INPUT_FREQUENCY   8000000
@@ -306,7 +306,7 @@
 /*!< Uncomment the following line if you need to relocate your vector Table in
      Internal SRAM. */
 /* #define VECT_TAB_SRAM */
-#define VECT_TAB_OFFSET  0x00 /*!< Vector Table base offset field. 
+#define VECT_TAB_OFFSET  0x0 /*!< Vector Table base offset field. 
                                    This value must be a multiple of 0x200. */
 /******************************************************************************/
 
@@ -323,7 +323,7 @@
 #endif /* STM32F40_41xxx || STM32F427_437xx || STM32F429_439xx || STM32F401xx */  
 
 /* USB OTG FS, SDIO and RNG Clock =  PLL_VCO / PLLQ */
-#define PLL_Q      7
+#define PLL_Q      4	/* USB OTG FS=192/4=48MHz  */
 
 #if defined (STM32F40_41xxx)
 #define PLL_N      336
@@ -344,9 +344,9 @@
 #endif /* STM32F401xx */
 
 #if defined (STM32F411xE)
-#define PLL_N      400
+#define PLL_N      192	/* 96*2  50 ¡ÜPLLN ¡Ü432  */
 /* SYSCLK = PLL_VCO / PLL_P */
-#define PLL_P      4   
+#define PLL_P      2	/* PLLP = 2, 4, 6, or 8  */   
 #endif /* STM32F411xx */
 
 /******************************************************************************/
@@ -380,7 +380,7 @@
 #endif /* STM32F401xx */
 
 #if defined (STM32F411xE)
-  uint32_t SystemCoreClock = 100000000;
+  uint32_t SystemCoreClock = 96000000;
 #endif /* STM32F401xx */
 
 __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
@@ -669,8 +669,10 @@ static void SetSysClock(void)
 /******************************************************************************/
   __IO uint32_t StartUpCounter = 0, HSEStatus = 0;
   
-  /* Enable HSE and HSE BYPASS */
-  RCC->CR |= ((uint32_t)RCC_CR_HSEON | RCC_CR_HSEBYP);
+//  /* Enable HSE and HSE BYPASS */
+//  RCC->CR |= ((uint32_t)RCC_CR_HSEON | RCC_CR_HSEBYP);
+  /* Enable HSE */
+  RCC->CR |= ((uint32_t)RCC_CR_HSEON);
  
   /* Wait till HSE is ready and if Time out is reached exit */
   do
@@ -697,10 +699,10 @@ static void SetSysClock(void)
     /* HCLK = SYSCLK / 1*/
     RCC->CFGR |= RCC_CFGR_HPRE_DIV1;
 
-    /* PCLK2 = HCLK / 2*/
+    /* PCLK2 = HCLK / 1*/
     RCC->CFGR |= RCC_CFGR_PPRE2_DIV1;
     
-    /* PCLK1 = HCLK / 4*/
+    /* PCLK1 = HCLK / 2*/
     RCC->CFGR |= RCC_CFGR_PPRE1_DIV2;
 
     /* Configure the main PLL */

@@ -68,15 +68,6 @@ int main(void)
 	LED_Init();		        			//初始化LED端口
 	KEY_Init();							//初始化按键
 	EXTIX_Init();						//初始化外部中断
-	LCD_Init();							//初始化LCD
-	
-    POINT_COLOR = RED;
-	LCD_ShowString(30,10,200,16,16,"ATK STM32F103/407");	
-	LCD_ShowString(30,30,200,16,16,"FreeRTOS Examp 6-3");
-	LCD_ShowString(30,50,200,16,16,"Task Susp and Resum");
-	LCD_ShowString(30,70,200,16,16,"ATOM@ALIENTEK");
-	LCD_ShowString(30,90,200,16,16,"2016/11/25");
-	
 	//创建开始任务
     xTaskCreate((TaskFunction_t )start_task,            //任务函数
                 (const char*    )"start_task",          //任务名称
@@ -147,20 +138,12 @@ void task1_task(void *pvParameters)
 {
 	u8 task1_num=0;
 	
-	POINT_COLOR = BLACK;
-
-	LCD_DrawRectangle(5,110,115,314); 	//画一个矩形	
-	LCD_DrawLine(5,130,115,130);		//画线
-	POINT_COLOR = BLUE;
-	LCD_ShowString(6,111,110,16,16,"Task1 Run:000");
 	while(1)
 	{
 		task1_num++;	//任务执1行次数加1 注意task1_num1加到255的时候会清零！！
 		LED0=!LED0;
 		printf("任务1已经执行：%d次\r\n",task1_num);
-		LCD_Fill(6,131,114,313,lcd_discolor[task1_num%14]); //填充区域
-		LCD_ShowxNum(86,111,task1_num,3,16,0x80);	//显示任务执行次数
-        vTaskDelay(1000);                           //延时1s，也就是1000个时钟节拍	
+     vTaskDelay(1000);                           //延时1s，也就是1000个时钟节拍	
 	}
 }
 
@@ -169,19 +152,14 @@ void task2_task(void *pvParameters)
 {
 	u8 task2_num=0;
 	
-	POINT_COLOR = BLACK;
 
-	LCD_DrawRectangle(125,110,234,314); //画一个矩形	
-	LCD_DrawLine(125,130,234,130);		//画线
-	POINT_COLOR = BLUE;
-	LCD_ShowString(126,111,110,16,16,"Task2 Run:000");
+
 	while(1)
 	{
 		task2_num++;	//任务2执行次数加1 注意task1_num2加到255的时候会清零！！
         LED1=!LED1;
 		printf("任务2已经执行：%d次\r\n",task2_num);
-		LCD_ShowxNum(206,111,task2_num,3,16,0x80);  //显示任务执行次数
-		LCD_Fill(126,131,233,313,lcd_discolor[13-task2_num%14]); //填充区域
+
         vTaskDelay(1000);                           //延时1s，也就是1000个时钟节拍	
 	}
 }

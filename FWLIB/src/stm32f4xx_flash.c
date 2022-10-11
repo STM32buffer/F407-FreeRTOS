@@ -1528,7 +1528,7 @@ void FLASH_ClearFlag(uint32_t FLASH_FLAG)
 FLASH_Status FLASH_GetStatus(void)
 {
   FLASH_Status flashstatus = FLASH_COMPLETE;
-  
+
   if((FLASH->SR & FLASH_FLAG_BSY) == FLASH_FLAG_BSY) 
   {
     flashstatus = FLASH_BUSY;
