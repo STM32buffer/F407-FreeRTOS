@@ -27,18 +27,26 @@ Project File Date:  10/11/2022
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 3 (build 300)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'FreeRTOS'
+compiling motors.c...
+..\HARDWARE\MOTORS\motors.c(19): warning:  #550-D: variable "isInit" was set but never used
+  static bool isInit = false;
+..\HARDWARE\MOTORS\motors.c(21): warning:  #177-D: variable "MOTORS" was declared but never referenced
+  static const u32 MOTORS[] = { MOTOR_M1, MOTOR_M2, MOTOR_M3, MOTOR_M4 };
+..\HARDWARE\MOTORS\motors.c(25): warning:  #177-D: function "ratioToCCRx" was declared but never referenced
+  static u16 ratioToCCRx(u16 val)
+..\HARDWARE\MOTORS\motors.c: 3 warnings, 0 errors
 compiling main.c...
 linking...
-Program Size: Code=31546 RO-data=3926 RW-data=340 ZI-data=23892  
+Program Size: Code=32642 RO-data=3926 RW-data=368 ZI-data=24016  
 FromELF: creating hex file...
-"..\OBJ\LED.axf" - 0 Error(s), 0 Warning(s).
+"..\OBJ\LED.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   C:\Users\2297257662\Desktop\F411FreeRTOS\USER\RTE
   D:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

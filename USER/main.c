@@ -1,7 +1,5 @@
-
 #include "FreeRTOS.h"
 #include "task.h"
-
 #include "sys.h"
 #include "usart.h"
 #include "delay.h"
@@ -14,11 +12,6 @@
 #include "timer.h"
 #include "motors.h"
 #include "schedule.h"
-
-
-
-
-
 int a=150,b=150,c=150;
 extern int16_t HIGH,highset;//????
 extern int32_t highTag, highNow, control;//????????,????,???
@@ -84,6 +77,7 @@ int main(void)
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);//设置系统中断优先级分组4
 	delay_init(168);					//初始化延时函数
 	uart_init(115200);     				//初始化串口
+	motorsInit();
   whole_encoder =0;
 	TIM_SetCompare4(TIM4, 1800); // PB9  ??
 	TIM_SetCompare1(TIM2, 1890); // PB7	 2?????

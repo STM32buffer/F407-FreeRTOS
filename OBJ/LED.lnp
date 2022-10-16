@@ -4,7 +4,6 @@
 "..\obj\system_stm32f4xx.o"
 "..\obj\led.o"
 "..\obj\timer.o"
-"..\obj\exti.o"
 "..\obj\key.o"
 "..\obj\motors.o"
 "..\obj\mpu6050.o"

@@ -83,9 +83,9 @@ void TIM1_Int_Init(u16 arr, u16 psc)
 
 
 extern int16_t Speed_set; // 控制电机摇杆输入量对应的值
-extern int16_t D_yaw_control,D_pitch_control;  // 控制两个舵机摇杆输入量对应的值0~100
+extern int16_t D_yaw_control,D_pitch_control,D_roll_control;  // 控制两个舵机摇杆输入量对应的值0~100
 //int32_t d_yaw_control,d_pitch_control;        // 将D_yaw_control从0~100转换成期望的角度范围
-int dir_pwm_yaw=150,dir_pwm_pitch = 150;    // 控制两个舵机P波值，150对应中值
+int dir_pwm_yaw=150,dir_pwm_pitch = 150,dir_pwm_roll = 150;    // 控制两个舵机P波值，150对应中值
 
 
 
@@ -105,35 +105,59 @@ void User_PidSpeedControl(void)  //控制电机来控制飞行高度
 
 u16 yaw_Mid = 150;         //控制yaw舵机的中值
 u16 pitch_Mid = 150;       //控制pitch舵机的中值
+u16 roll_Mid = 150;  
 //int yaw_up_limit = 45;     //样机期望角度的范围
 //int yaw_down_limit = -45;  //样机期望角度的范围
 //int pitch_up_limit = 45;   //样机期望角度的范围
 //int pitch_down_limit = -45;//样机期望角度的范围
 PID_AbsoluteType yaw_PID;  				//角度环PID控制器
 PID_AbsoluteType pitch_PID;
+PID_AbsoluteType roll_PID;
+
 PID_AbsoluteType yaw_speed_PID;		//角速度环PID控制器
 PID_AbsoluteType pitch_speed_PID;
+PID_AbsoluteType roll_speed_PID;
+
 PID_AbsoluteType yaw_acc_PID;			//角加速度环PID控制器
 PID_AbsoluteType pitch_acc_PID;
+PID_AbsoluteType roll_acc_PID;
+
 int yaw_speed_limit = 20000;		 //角速度限幅-21846~21846
 int pitch_speed_limit = 20000;
+int roll_speed_limit = 20000;
+
 int yaw_acc_limit = 20000;		 //角加速度限幅-21846~21846
 int pitch_acc_limit = 20000;
+int roll_acc_limit = 20000;
+
 int yaw_out_limit = 20;		 //舵机输出限幅，直接作用于舵机P波
 int pitch_out_limit = 5;
+int roll_out_limit = 5;
+
 int target_yaw = 90; 			 //样机期望角度
 int target_pitch = 0;
+int target_roll = 0;
+
 void Att_Control() //加自稳的姿态控制
 {
 	//yaw姿态角的三个串级PID
 	/************************************换样机时注意**************************************************/
 	target_yaw = (D_yaw_control-50)*90/100;   //根据遥控器传过来的D_yaw_control计算期望的角度，限幅为-45~45°竖直的时候pitch是90左右
-	yaw_PID.errNow = target_yaw - roll;  //样机的yaw对应IMU的roll,
+	yaw_PID.errNow = target_yaw - yaw;  //样机的yaw对应IMU的roll,
 	/**************************************************************************************************/
 	PID_AbsoluteMode(&yaw_PID);
 	yaw_PID.ctrOut = yaw_PID.ctrOut>yaw_speed_limit? yaw_speed_limit:yaw_PID.ctrOut;
 	yaw_PID.ctrOut = yaw_PID.ctrOut<-yaw_speed_limit? -yaw_speed_limit:yaw_PID.ctrOut;
 		
+	
+		//roll姿态角的三个串级PID
+	/************************************换样机时注意**************************************************/
+	target_roll = (D_roll_control-50)*90/100;   //根据遥控器传过来的D_roll_control计算期望的角度，限幅为-45~45°竖直的时候pitch是90左右
+	roll_PID.errNow = target_roll - roll;  
+	/**************************************************************************************************/
+	PID_AbsoluteMode(&roll_PID);
+	roll_PID.ctrOut = roll_PID.ctrOut>roll_speed_limit? roll_speed_limit:roll_PID.ctrOut;
+	roll_PID.ctrOut = roll_PID.ctrOut<-roll_speed_limit? -roll_speed_limit:roll_PID.ctrOut;
 	
 	
 	//pitch姿态角的三个串级PID
@@ -167,6 +191,14 @@ void Att_Control_2() //加自稳的姿态控制
 	dir_pwm_pitch = pitch_Mid - pitch_speed_PID.ctrOut;
 	if( dir_pwm_pitch>146 && dir_pwm_pitch<154)
 		dir_pwm_pitch = 150;
+	
+	roll_speed_PID.errNow = roll_PID.ctrOut - gyrox; //gyrox,y,z？？？？？？
+	PID_AbsoluteMode(&roll_speed_PID);
+	roll_speed_PID.ctrOut = roll_speed_PID.ctrOut>roll_out_limit? roll_out_limit:roll_speed_PID.ctrOut;
+	roll_speed_PID.ctrOut = roll_speed_PID.ctrOut<-roll_out_limit? -roll_out_limit:roll_speed_PID.ctrOut;
+	dir_pwm_roll = roll_Mid - roll_speed_PID.ctrOut;
+	if( dir_pwm_roll>146 && dir_pwm_roll<154)
+		dir_pwm_roll = 150;
 	
 
 	TIM_SetCompare2(TIM4, dir_pwm_yaw);  //小尾翼
@@ -244,6 +276,27 @@ void PID_ControlInit(void)
     pitch_acc_PID.kd = 0.3;
     pitch_acc_PID.kp = 1;
     pitch_acc_PID.ki = 0;
+		
+		roll_PID.ctrOut = 0;
+    roll_PID.errNow = 0;
+    roll_PID.errOld = 0;
+    roll_PID.kd = 30;
+    roll_PID.kp = 80;
+    roll_PID.ki = 0;
+		
+		roll_speed_PID.ctrOut = 0;
+    roll_speed_PID.errNow = 0;
+    roll_speed_PID.errOld = 0;
+    roll_speed_PID.kd = 0.005;
+    roll_speed_PID.kp = 0.01;
+    roll_speed_PID.ki = 0;
+		
+		roll_acc_PID.ctrOut = 0;
+    roll_acc_PID.errNow = 0;
+    roll_acc_PID.errOld = 0;
+    roll_acc_PID.kd = 0.3;
+    roll_acc_PID.kp = 1;
+    roll_acc_PID.ki = 0;
 }
 
 
