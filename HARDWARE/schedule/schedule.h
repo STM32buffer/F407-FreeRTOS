@@ -75,4 +75,7 @@ void PID_ControlInit(void);
 void TIM1_UP_IRQHandler(void);
 void PID_AbsoluteMode(PID_AbsoluteType* PID);
 void PID_IncrementMode(PID_IncrementType* PID);
-void PID();
+void PID(void);
+void User_PidSpeedControl(void) ;
+void Att_Control(void) ;
+void Att_Control_2(void) ;

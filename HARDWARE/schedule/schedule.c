@@ -176,21 +176,21 @@ void Att_Control_2() //加自稳的姿态控制
 
 
 
-long int time1=0;
-int send_flag = 0;
+//long int time1=0;
+//int send_flag = 0;
 
 void TIM1_UP_IRQHandler(void) //2ms中断
 { 	    	  	     
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)//?????TIM??????:TIM ??? 
 	{
-		User_PidSpeedControl(); //油门
-		Att_Control();    			//姿态控制    
-		time1++;
-		if(time1>60000000)
-			time1 = 0;
-		if(time1%5 == 0) //10ms发一次
-			//send_flag = 1;
-			Att_Control_2();
+//		User_PidSpeedControl(); //油门
+//		Att_Control();    			//姿态控制    
+//		time1++;
+//		if(time1>60000000)
+//			time1 = 0;
+//		if(time1%5 == 0) //10ms发一次
+//			//send_flag = 1;
+//			Att_Control_2();
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 	}	 	
 } 

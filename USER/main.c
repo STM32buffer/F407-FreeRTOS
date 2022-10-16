@@ -1,13 +1,42 @@
-#include "sys.h"
-#include "delay.h"
-#include "usart.h"
-#include "led.h"
-#include "timer.h"
-#include "lcd.h"
-#include "key.h"
-#include "exti.h"
+
 #include "FreeRTOS.h"
 #include "task.h"
+
+#include "sys.h"
+#include "usart.h"
+#include "delay.h"
+#include "mpu6050.h"
+//#include "usmart.h"
+#include "inv_mpu.h"
+#include "inv_mpu_dmp_motion_driver.h"
+#include "data_transfer.h"
+#include "delay.h"
+#include "timer.h"
+#include "motors.h"
+#include "schedule.h"
+
+
+
+
+
+int a=150,b=150,c=150;
+extern int16_t HIGH,highset;//????
+extern int32_t highTag, highNow, control;//????????,????,???
+int time2 = 0;
+int time3 = 0;
+int time4 = 0;
+int time5 = 0;
+int time6 = 0;
+int time7 = 0;
+
+int agl_count = 0;
+float agl_sum0 = 0;
+int encoderCount=0;
+int te1 =0;
+int test1=150, test2=150, test3=0;
+int pre_count = 0;
+int PITCH_me,YAW_me,ROLL_me;
+extern  uint8_t BTNumberRece[16];
 /************************************************
 
 ************************************************/
@@ -22,46 +51,52 @@ TaskHandle_t StartTask_Handler;
 void start_task(void *pvParameters);
 
 //任务优先级
-#define KEY_TASK_PRIO		2
+#define USTB_SENSOR_TASK_PRIO		2
 //任务堆栈大小	
-#define KEY_STK_SIZE 		128  
+#define USTB_SENSOR_STK_SIZE 		128  
 //任务句柄
-TaskHandle_t KeyTask_Handler;
+TaskHandle_t USTB_SensorTask_Handler;
 //任务函数
-void key_task(void *pvParameters);
+void USTB_sensor_task(void *pvParameters);
 
 //任务优先级
-#define TASK1_TASK_PRIO		3
+#define USTB_DateExchang_TASK_PRIO		3
 //任务堆栈大小	
-#define TASK1_STK_SIZE 		128  
+#define USTB_DateExchang_STK_SIZE 		128  
 //任务句柄
-TaskHandle_t Task1Task_Handler;
+TaskHandle_t USTB_DateExchangTask_Handler;
 //任务函数
-void task1_task(void *pvParameters);
+void USTB_DateExchang_task(void *pvParameters);
 
 //任务优先级
-#define TASK2_TASK_PRIO		4
+#define USTB_AttitudeControl_TASK_PRIO		4
 //任务堆栈大小	
-#define TASK2_STK_SIZE 		128  
+#define USTB_AttitudeControl_STK_SIZE 		128  
 //任务句柄
-TaskHandle_t Task2Task_Handler;
+TaskHandle_t USTB_AttitudeControlTask_Handler;
 //任务函数
-void task2_task(void *pvParameters);
+void USTB_AttitudeControl_task(void *pvParameters);
 
-//LCD刷屏时使用的颜色
-int lcd_discolor[14]={	WHITE, BLACK, BLUE,  BRED,      
-						GRED,  GBLUE, RED,   MAGENTA,       	 
-						GREEN, CYAN,  YELLOW,BROWN, 			
-						BRRED, GRAY };
+
 
 int main(void)
 { 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);//设置系统中断优先级分组4
 	delay_init(168);					//初始化延时函数
 	uart_init(115200);     				//初始化串口
-	LED_Init();		        			//初始化LED端口
-	KEY_Init();							//初始化按键
-	EXTIX_Init();						//初始化外部中断
+  whole_encoder =0;
+	TIM_SetCompare4(TIM4, 1800); // PB9  ??
+	TIM_SetCompare1(TIM2, 1890); // PB7	 2?????
+	TIM_SetCompare2(TIM2, 1800); // PB7  1?????
+	TIM_SetCompare2(TIM4, 1800); // ???
+	MPU_Init(); 
+	PID_ControlInit();
+	delay_ms(3000); 
+	TIM1_Int_Init(19,7199);
+	while(mpu_dmp_init())//???????????
+   {
+			delay_ms(200);
+   }
 	//创建开始任务
     xTaskCreate((TaskFunction_t )start_task,            //任务函数
                 (const char*    )"start_task",          //任务名称
@@ -77,84 +112,68 @@ void start_task(void *pvParameters)
 {
     taskENTER_CRITICAL();           //进入临界区
 	//创建KEY任务
-	xTaskCreate((TaskFunction_t )key_task,             
-                (const char*    )"key_task",           
-                (uint16_t       )KEY_STK_SIZE,        
+	xTaskCreate((TaskFunction_t )USTB_sensor_task,             
+                (const char*    )"USTB_sensor_task",           
+                (uint16_t       )USTB_SENSOR_STK_SIZE,        
                 (void*          )NULL,                  
-                (UBaseType_t    )KEY_TASK_PRIO,        
-                (TaskHandle_t*  )&KeyTask_Handler);  
-    //创建TASK1任务
-    xTaskCreate((TaskFunction_t )task1_task,             
-                (const char*    )"task1_task",           
-                (uint16_t       )TASK1_STK_SIZE,        
+                (UBaseType_t    )USTB_SENSOR_TASK_PRIO,        
+                (TaskHandle_t*  )&USTB_SensorTask_Handler);  
+    //创建USTB_DateExchang任务
+    xTaskCreate((TaskFunction_t )USTB_DateExchang_task,             
+                (const char*    )"USTB_DateExchang_task",           
+                (uint16_t       )USTB_DateExchang_STK_SIZE,        
                 (void*          )NULL,                  
-                (UBaseType_t    )TASK1_TASK_PRIO,        
-                (TaskHandle_t*  )&Task1Task_Handler);   
-    //创建TASK2任务
-    xTaskCreate((TaskFunction_t )task2_task,     
-                (const char*    )"task2_task",   
-                (uint16_t       )TASK2_STK_SIZE,
+                (UBaseType_t    )USTB_DateExchang_TASK_PRIO,        
+                (TaskHandle_t*  )&USTB_DateExchangTask_Handler);   
+    //创建USTB_AttitudeControl任务
+    xTaskCreate((TaskFunction_t )USTB_AttitudeControl_task,     
+                (const char*    )"USTB_AttitudeControl_task",   
+                (uint16_t       )USTB_AttitudeControl_STK_SIZE,
                 (void*          )NULL,
-                (UBaseType_t    )TASK2_TASK_PRIO,
-                (TaskHandle_t*  )&Task2Task_Handler); 
+                (UBaseType_t    )USTB_AttitudeControl_TASK_PRIO,
+                (TaskHandle_t*  )&USTB_AttitudeControlTask_Handler); 
     vTaskDelete(StartTask_Handler); //删除开始任务
     taskEXIT_CRITICAL();            //退出临界区
 }
 
-//key任务函数
-void key_task(void *pvParameters)
+//传感器任务函数
+void USTB_sensor_task(void *pvParameters)
 {
-	u8 key;
 	while(1)
 	{
-		key=KEY_Scan(0);
-		switch(key)
-		{
-			case WKUP_PRES:
-				vTaskSuspend(Task1Task_Handler);//挂起任务1
-				printf("挂起任务1的运行!\r\n");
-				break;
-			case KEY1_PRES:
-				vTaskResume(Task1Task_Handler);	//恢复任务1
-				printf("恢复任务1的运行!\r\n");
-				break;
-			case KEY2_PRES:
-				vTaskSuspend(Task2Task_Handler);//挂起任务2
-				printf("挂起任务2的运行!\r\n");
-				break;
-		}
-		vTaskDelay(10);			//延时10ms 
+		if(mpu_dmp_get_data(&roll,&pitch,&yaw)==0)		//??3ms
+			{
+					MPU_Get_Accelerometer(&aacx,&aacy,&aacz);   //??????????	//???1ms
+					MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz);    //???????		//???1m
+			}
+			vTaskDelay(10);  
 	}
 }
 
-//task1任务函数
-void task1_task(void *pvParameters)
+//数据交互任务函数
+void USTB_DateExchang_task(void *pvParameters)
 {
-	u8 task1_num=0;
-	
 	while(1)
 	{
-		task1_num++;	//任务执1行次数加1 注意task1_num1加到255的时候会清零！！
-		LED0=!LED0;
-		printf("任务1已经执行：%d次\r\n",task1_num);
-     vTaskDelay(1000);                           //延时1s，也就是1000个时钟节拍	
+		USTB_DT_Data_Exchange();
+     vTaskDelay(100);                           //延时1s，也就是1000个时钟节拍	
 	}
 }
 
-//task2任务函数
-void task2_task(void *pvParameters)
+long int time1=0;
+//姿态控制任务函数
+void USTB_AttitudeControl_task(void *pvParameters)
 {
-	u8 task2_num=0;
-	
-
-
 	while(1)
 	{
-		task2_num++;	//任务2执行次数加1 注意task1_num2加到255的时候会清零！！
-        LED1=!LED1;
-		printf("任务2已经执行：%d次\r\n",task2_num);
-
-        vTaskDelay(1000);                           //延时1s，也就是1000个时钟节拍	
+		User_PidSpeedControl(); //油门
+		Att_Control();    			//姿态控制    
+		time1++;
+		if(time1>60000000)
+			time1 = 0;
+		if(time1%5 == 0) //10ms发一次
+			Att_Control_2();
+    vTaskDelay(3);                           //延时1s，也就是1000个时钟节拍	
 	}
 }
 

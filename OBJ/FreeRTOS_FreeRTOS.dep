@@ -1,9 +1,12 @@
 Dependencies for Project 'FreeRTOS', Target 'FreeRTOS': (DO NOT MODIFY !)
-F (.\main.c)(0x63456E52)(-c --cpu Cortex-M4.fp -g -O2 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\FWLIB\inc -I ..\FreeRTOS\include -I ..\FreeRTOS\portable\RVDS\ARM_CM4F -I ..\HARDWARE\LED -I ..\HARDWARE\TIMER -I ..\HARDWARE\LCD -I ..\HARDWARE\EXTI -I ..\HARDWARE\KEY -I ..\HARDWARE\MOTORS -I ..\HARDWARE\MPU6050 -I ..\HARDWARE\MPU6050\eMPL -I ..\HARDWARE\Dateex -I ..\HARDWARE\schedule-IC:\Users\2297257662\Desktop\F411FreeRTOS\USER\RTE-ID:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F411xE -DSTM32F411xE -DARM_MATH_CM4 -DUSE_STDPERIPH_DRIVER -DUSE_USB_OTG_FS-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
+F (.\main.c)(0x634B78B9)(-c --cpu Cortex-M4.fp -g -O2 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\FWLIB\inc -I ..\FreeRTOS\include -I ..\FreeRTOS\portable\RVDS\ARM_CM4F -I ..\HARDWARE\LED -I ..\HARDWARE\TIMER -I ..\HARDWARE\LCD -I ..\HARDWARE\EXTI -I ..\HARDWARE\KEY -I ..\HARDWARE\MOTORS -I ..\HARDWARE\MPU6050 -I ..\HARDWARE\MPU6050\eMPL -I ..\HARDWARE\Dateex -I ..\HARDWARE\schedule-IC:\Users\2297257662\Desktop\F411FreeRTOS\USER\RTE-ID:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F411xE -DSTM32F411xE -DARM_MATH_CM4 -DUSE_STDPERIPH_DRIVER -DUSE_USB_OTG_FS-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
+I (..\FreeRTOS\include\FreeRTOS.h)(0x6343AF28)
+I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x574E3E26)
+I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (..\FreeRTOS\include\FreeRTOSConfig.h)(0x6343AF28)
 I (..\SYSTEM\sys\sys.h)(0x6343AF2D)
 I (..\USER\stm32f4xx.h)(0x6343AF2D)
 I (..\CORE\core_cm4.h)(0x59269749)
-I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
 I (..\CORE\core_cmInstr.h)(0x53C7D530)
 I (..\CORE\core_cmFunc.h)(0x53C7D530)
 I (..\CORE\core_cm4_simd.h)(0x53C7D530)
@@ -29,18 +32,8 @@ I (..\FWLIB\inc\stm32f4xx_usart.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_wwdg.h)(0x53DBAFAD)
 I (..\FWLIB\inc\misc.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_flash_ramfunc.h)(0x53DF9330)
-I (..\SYSTEM\delay\delay.h)(0x6343AF2D)
 I (..\SYSTEM\usart\usart.h)(0x63455B6B)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x574E3E26)
-I (..\HARDWARE\LED\led.h)(0x6343AF2D)
-I (..\HARDWARE\TIMER\timer.h)(0x6343AF2D)
-I (..\HARDWARE\LCD\lcd.h)(0x6343AF2D)
-I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x574E3E26)
-I (..\HARDWARE\KEY\key.h)(0x6343AF2C)
-I (..\HARDWARE\EXTI\exti.h)(0x6343AF2C)
-I (..\FreeRTOS\include\FreeRTOS.h)(0x6343AF28)
-I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x574E3E26)
-I (..\FreeRTOS\include\FreeRTOSConfig.h)(0x6343AF28)
 I (..\FreeRTOS\include\projdefs.h)(0x6343AF29)
 I (..\FreeRTOS\include\portable.h)(0x6343AF29)
 I (..\FreeRTOS\include\deprecated_definitions.h)(0x6343AF28)
@@ -48,6 +41,16 @@ I (..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h)(0x6343AF2A)
 I (..\FreeRTOS\include\mpu_wrappers.h)(0x6343AF29)
 I (..\FreeRTOS\include\task.h)(0x6343AF29)
 I (..\FreeRTOS\include\list.h)(0x6343AF28)
+I (..\SYSTEM\delay\delay.h)(0x6343AF2D)
+I (..\HARDWARE\MPU6050\mpu6050.h)(0x5541AD30)
+I (..\HARDWARE\MPU6050\mpuiic.h)(0x63455A77)
+I (..\HARDWARE\MPU6050\eMPL\inv_mpu.h)(0x6345570C)
+I (..\HARDWARE\MPU6050\eMPL\inv_mpu_dmp_motion_driver.h)(0x50CA9A0C)
+I (..\HARDWARE\Dateex\data_transfer.h)(0x634563AC)
+I (..\HARDWARE\TIMER\timer.h)(0x6343AF2D)
+I (..\HARDWARE\MOTORS\motors.h)(0x63455571)
+I (D:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x574E3E26)
+I (..\HARDWARE\schedule\schedule.h)(0x634B75C5)
 F (.\stm32f4xx_it.c)(0x63442A53)(-c --cpu Cortex-M4.fp -g -O2 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\FWLIB\inc -I ..\FreeRTOS\include -I ..\FreeRTOS\portable\RVDS\ARM_CM4F -I ..\HARDWARE\LED -I ..\HARDWARE\TIMER -I ..\HARDWARE\LCD -I ..\HARDWARE\EXTI -I ..\HARDWARE\KEY -I ..\HARDWARE\MOTORS -I ..\HARDWARE\MPU6050 -I ..\HARDWARE\MPU6050\eMPL -I ..\HARDWARE\Dateex -I ..\HARDWARE\schedule-IC:\Users\2297257662\Desktop\F411FreeRTOS\USER\RTE-ID:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F411xE -DSTM32F411xE -DARM_MATH_CM4 -DUSE_STDPERIPH_DRIVER -DUSE_USB_OTG_FS-o ..\obj\stm32f4xx_it.o --omf_browse ..\obj\stm32f4xx_it.crf --depend ..\obj\stm32f4xx_it.d)
 I (stm32f4xx_it.h)(0x63442A53)
 I (stm32f4xx.h)(0x6343AF2D)
@@ -464,8 +467,8 @@ I (..\FWLIB\inc\misc.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_flash_ramfunc.h)(0x53DF9330)
 I (..\SYSTEM\usart\usart.h)(0x63455B6B)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x574E3E26)
-F (..\HARDWARE\schedule\schedule.c)(0x634562E3)(-c --cpu Cortex-M4.fp -g -O2 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\FWLIB\inc -I ..\FreeRTOS\include -I ..\FreeRTOS\portable\RVDS\ARM_CM4F -I ..\HARDWARE\LED -I ..\HARDWARE\TIMER -I ..\HARDWARE\LCD -I ..\HARDWARE\EXTI -I ..\HARDWARE\KEY -I ..\HARDWARE\MOTORS -I ..\HARDWARE\MPU6050 -I ..\HARDWARE\MPU6050\eMPL -I ..\HARDWARE\Dateex -I ..\HARDWARE\schedule-IC:\Users\2297257662\Desktop\F411FreeRTOS\USER\RTE-ID:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F411xE -DSTM32F411xE -DARM_MATH_CM4 -DUSE_STDPERIPH_DRIVER -DUSE_USB_OTG_FS-o ..\obj\schedule.o --omf_browse ..\obj\schedule.crf --depend ..\obj\schedule.d)
-I (..\HARDWARE\schedule\schedule.h)(0x63456182)
+F (..\HARDWARE\schedule\schedule.c)(0x634B7576)(-c --cpu Cortex-M4.fp -g -O2 --apcs=interwork --split_sections -I ..\CORE -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\USER -I ..\FWLIB\inc -I ..\FreeRTOS\include -I ..\FreeRTOS\portable\RVDS\ARM_CM4F -I ..\HARDWARE\LED -I ..\HARDWARE\TIMER -I ..\HARDWARE\LCD -I ..\HARDWARE\EXTI -I ..\HARDWARE\KEY -I ..\HARDWARE\MOTORS -I ..\HARDWARE\MPU6050 -I ..\HARDWARE\MPU6050\eMPL -I ..\HARDWARE\Dateex -I ..\HARDWARE\schedule-IC:\Users\2297257662\Desktop\F411FreeRTOS\USER\RTE-ID:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-ID:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F411xE -DSTM32F411xE -DARM_MATH_CM4 -DUSE_STDPERIPH_DRIVER -DUSE_USB_OTG_FS-o ..\obj\schedule.o --omf_browse ..\obj\schedule.crf --depend ..\obj\schedule.d)
+I (..\HARDWARE\schedule\schedule.h)(0x634B75C5)
 I (..\SYSTEM\sys\sys.h)(0x6343AF2D)
 I (..\USER\stm32f4xx.h)(0x6343AF2D)
 I (..\CORE\core_cm4.h)(0x59269749)
